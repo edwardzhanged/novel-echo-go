@@ -1,0 +1,10 @@
+root = "."
+tmp_dir = "tmp"
+build_dir = "build"
+binary_name = "app"
+exclude_dir = ["tmp", "build", "vendor"]
+ignore_dir = [".git", "tmp", "build", "vendor"]
+ignored = ["*.test", "*.swp"]
+
+[build]
+  cmd = "go run server.go"
