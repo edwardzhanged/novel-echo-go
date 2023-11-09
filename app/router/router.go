@@ -7,7 +7,7 @@ import (
 
 func InitRouter() {
 	e := echo.New()
-	e.GET("/user/login", handlers.LoginHandler)
+	e.POST("/api/front/user/login", handlers.LoginHandler)
 	e.GET("/user/register", handlers.RegisterHandler)
 
 	e.Logger.Fatal(e.Start(":1323"))
