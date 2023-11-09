@@ -3,6 +3,7 @@ module github.com/edwardzhanged/novel-go
 go 1.20
 
 require (
+	github.com/google/uuid v1.1.2
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/spf13/viper v1.17.0
 	golang.org/x/crypto v0.14.0

@@ -5,10 +5,6 @@ import (
 	"github.com/labstack/echo"
 )
 
-//	type User struct {
-//		Name  string `json:"name" form:"name" query:"name"`
-//		Email string `json:"email" form:"email" query:"email"`
-//	}
 type CustomResponse struct {
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
@@ -24,6 +20,8 @@ func LoginHandler(c echo.Context) error {
 	}
 	user, err := userApi.Login(u.Phone, u.Password)
 	if err != nil {
+		resp := CustomResponse{Code: 201, Message: "用户名或密码错误"}
+		return c.JSONPretty(200, &resp, "  ")
 	}
 	resp := CustomResponse{Code: 200, Message: "OK", Data: &user}
 	return c.JSONPretty(200, &resp, "  ")
@@ -34,6 +32,8 @@ func RegisterHandler(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	userApi.Register(u.Username, u.Password, u.Phone)
-	return c.JSONPretty(200, "Register", "  ")
+	newUser, _ := userApi.Register(u.Username, u.Password, u.Phone)
+	resp := CustomResponse{Code: 200, Message: "OK", Data: &newUser}
+
+	return c.JSONPretty(200, &resp, "  ")
 }

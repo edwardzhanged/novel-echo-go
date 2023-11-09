@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/edwardzhanged/novel-go/app/conf"
 	"github.com/edwardzhanged/novel-go/app/model"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,43 +24,43 @@ type User struct {
 
 type UserApi struct{}
 
-type UseInfo struct {
+type UserInfo struct {
 	Token    string `json:"token"`
 	Uid      int    `json:"uid"`
-	Nickname string `json:"nickName"`
+	Nickname string `json:"nickname" omitEmpty:"nickname"`
 }
 
 var secretKey = []byte("my-secret-key")
 
-func (u *UserApi) Login(phone string, password string) (*UseInfo, error) {
+func (u *UserApi) Login(phone string, password string) (*UserInfo, error) {
 
 	var modelUser model.User
 	conf.GbGorm.Where("phone = ?", phone).First(&modelUser)
 	// 验证密码
-	fmt.Println(modelUser.Password)
 	err := bcrypt.CompareHashAndPassword([]byte(modelUser.Password), []byte(password))
 	if err != nil {
-		fmt.Println("Invalid password:", err)
-		//return nil, err
+		return nil, err
 	}
-
-	fmt.Println("Password is valid!")
-	token := generateToken("123")
-	return &UseInfo{
-		Token: token, Uid: 123, Nickname: "edwardxx",
+	token := generateToken(modelUser.Uuid)
+	return &UserInfo{
+		Token: token, Uid: int(modelUser.ID), Nickname: modelUser.Nickname,
 	}, nil
 }
 
-func (u *UserApi) Register(username string, password string, phone string) {
+func (u *UserApi) Register(nickname string, password string, phone string) (*UserInfo, error) {
 	// 生成密码的哈希
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Println("Error generating hash:", err)
-		return
+		return nil, err
 	}
-	conf.GbGorm.Create(&model.User{Username: username, Password: string(hashedPassword), Phone: phone})
+	userUuid := uuid.New()
+	key := userUuid.String()
+	newUser := &model.User{Nickname: nickname, Password: string(hashedPassword), Phone: phone, Uuid: key}
+	conf.GbGorm.Create(newUser)
 
-	fmt.Println("Hashed password:", string(hashedPassword))
+	fmt.Println(newUser.ID)
+	return &UserInfo{Token: generateToken(key), Uid: int(newUser.ID), Nickname: nickname}, nil
 }
 
 func (u *UserApi) Update() {
