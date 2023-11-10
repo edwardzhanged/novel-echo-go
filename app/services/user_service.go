@@ -14,12 +14,7 @@ import (
 type UserService interface {
 	Login()
 	Register()
-}
-
-type User struct {
-	Username string `json:"username" omitempty:"username" `
-	Password string `json:"password" omitempty:"password"`
-	Phone    string `json:"phone"`
+	EditInfo()
 }
 
 type UserApi struct{}
@@ -63,8 +58,13 @@ func (u *UserApi) Register(nickname string, password string, phone string) (*Use
 	return &UserInfo{Token: generateToken(key), Uid: int(newUser.ID), Nickname: nickname}, nil
 }
 
-func (u *UserApi) Update() {
-
+func (u *UserApi) EditInfo(uid int, userSex string, userPhoto string, nickname string) error {
+	err := conf.GbGorm.Model(&model.User{}).Where("id = ?", uid).Updates(
+		map[string]interface{}{"Nickname": nickname, "UserSex": userSex, "UserPhoto": userPhoto}).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func generateToken(userID string) string {
