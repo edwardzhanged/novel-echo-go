@@ -21,7 +21,7 @@ func main() {
 func initDB(db *gorm.DB) {
 	// 自动迁移表结构
 	fmt.Println("init db")
-	err := db.AutoMigrate(model.User{})
+	err := db.AutoMigrate(model.User{}, model.UserBookShelf{}, model.BookInfo{})
 	if err != nil {
 		panic("failed to migrate table")
 	}

@@ -15,6 +15,8 @@ type UserService interface {
 	Login()
 	Register()
 	EditInfo()
+	AddBookToShelf()
+	GetUserBookShelf()
 }
 
 type UserApi struct{}
@@ -23,6 +25,13 @@ type UserInfo struct {
 	Token    string `json:"token"`
 	Uid      int    `json:"uid"`
 	Nickname string `json:"nickname" omitEmpty:"nickname"`
+}
+
+type BookShelf struct {
+	BookID       int    `json:"book_id"`
+	BookName     string `json:"book_name"`
+	PreContentID int    `json:"pre_content_id"`
+	CreatedAt    string `json:"created_at"`
 }
 
 var secretKey = []byte("my-secret-key")
@@ -59,12 +68,27 @@ func (u *UserApi) Register(nickname string, password string, phone string) (*Use
 }
 
 func (u *UserApi) EditInfo(uid int, userSex string, userPhoto string, nickname string) error {
-	err := conf.GbGorm.Model(&model.User{}).Where("id = ?", uid).Updates(
+	err := conf.GbGorm.Model(&model.User{}).Where("idx = ?", uid).Updates(
 		map[string]interface{}{"Nickname": nickname, "UserSex": userSex, "UserPhoto": userPhoto}).Error
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (u *UserApi) AddBookToShelf(userID, bookInfoID int, preContentId int) error {
+
+	if err := conf.GbGorm.Create(&model.UserBookShelf{UserID: userID, BookInfoID: bookInfoID, PreContentId: preContentId}); err != nil {
+		return err.Error
+
+	}
+	return nil
+}
+
+func (u *UserApi) GetUserBookShelf(userID int) ([]BookShelf, error) {
+	var bookShelf []BookShelf
+	conf.GbGorm.Find(&bookShelf, "user_id = ?", userID)
+	return bookShelf, nil
 }
 
 func generateToken(userID string) string {

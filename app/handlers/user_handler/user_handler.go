@@ -47,6 +47,27 @@ func EditUserInfoHandler(c echo.Context) error {
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	userApi.EditInfo(int(u.ID), u.UserSex, u.UserPhoto, u.Nickname)
+	if err := userApi.EditInfo(int(u.ID), u.UserSex, u.UserPhoto, u.Nickname); err != nil {
+		resp := handlers.CustomResponse{Code: 201, Message: error.Error(err)}
+		return c.JSONPretty(200, &resp, "  ")
+	}
+	return c.JSONPretty(200, &handlers.CustomResponse{Code: 200, Message: "OK"}, "  ")
+}
+
+type BookShelf struct {
+	UserID       int `json:"user_id"`
+	BookInfoID   int `json:"book_id"`
+	PreContentId int `json:"pre_content_id"`
+}
+
+func AddBookToShelfHandler(c echo.Context) error {
+	u := new(BookShelf)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+	if err := userApi.AddBookToShelf(u.UserID, u.BookInfoID, u.PreContentId); err != nil {
+		resp := handlers.CustomResponse{Code: 201, Message: error.Error(err)}
+		return c.JSONPretty(200, &resp, "  ")
+	}
 	return c.JSONPretty(200, &handlers.CustomResponse{Code: 200, Message: "OK"}, "  ")
 }

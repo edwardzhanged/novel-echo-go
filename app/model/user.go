@@ -11,3 +11,12 @@ type User struct {
 	UserPhoto string
 	UserSex   string
 }
+
+type UserBookShelf struct {
+	gorm.Model
+	UserID       int      `gorm:"type:int;not null;comment:用户ID"`
+	PreContentId int      `gorm:"type:int;not null;comment:上次阅读章节ID"`
+	User         User     `gorm:"foreignkey:UserID"`
+	BookInfoID   int      `gorm:"type:int;not null;comment:书籍ID"`
+	BookInfo     BookInfo `gorm:"foreignKey:BookInfoID"`
+}
