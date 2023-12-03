@@ -30,5 +30,6 @@ func NewConfig() error {
 	if GbGorm, err = gorm.Open(mysql.Open(mysqlDsn), &gorm.Config{}); err != nil {
 		return err
 	}
+
 	return nil
 }
