@@ -6,11 +6,17 @@ import (
 
 func InitRouter() {
 	e := echo.New()
-	//e.POST("/api/front/user/login", user_handler.LoginHandler)
-	//e.POST("/api/front/user/register", user_handler.RegisterHandler)
-	//e.POST("/api/front/user/info", user_handler.EditUserInfoHandler)
-	//e.POST("/api/front/user/addBookToShelf", user_handler.AddBookToShelfHandler)
-	//e.GET("/api/front/user/getBookShelf", user_handler.GetBookShelfHandler)
+	// User Router
+	userRouter := e.Group("/api/front/user")
+	userRouter.POST("/login", user_handler.LoginHandler)
+	userRouter.POST("/register", user_handler.RegisterHandler)
+	userRouter.POST("/info", user_handler.EditUserInfoHandler)
+	userRouter.POST("/addBookToShelf", user_handler.AddBookToShelfHandler)
+	userRouter.POST("/getBookShelf", user_handler.getBookShelf)
+
+	// Resource Router
+	resourceRouter := e.Group("/api/front/resource")
+	resourceRouter.GET("/img_verify_code", resource_handler.GetImgVerifyCodeHandler)
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
