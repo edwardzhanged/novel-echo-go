@@ -1,6 +1,10 @@
 mysql:
-  user: edward
+  user: root
   password: 123456
   host: localhost
   port: 3306
   database: novel
+redis:
+  password:
+  host: localhost
+  port: 6379

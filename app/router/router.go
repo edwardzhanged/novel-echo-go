@@ -18,6 +18,7 @@ func InitRouter() {
 	// Resource Router
 	resourceRouter := e.Group("/api/front/resource")
 	resourceRouter.GET("/img_verify_code", resource_handler.GetImgVerifyCodeHandler)
+	resourceRouter.POST("/verify_img_answer", resource_handler.VerifyImgAnswerHandler)
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
