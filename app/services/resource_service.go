@@ -17,7 +17,7 @@ func (resource *ResourceApi) GetImgVerifyCode() (id string, b64s string, err err
 		Height:          60,
 		Width:           240,
 		ShowLineOptions: 3,
-		NoiseCount:      4,
+		NoiseCount:      2,
 	}
 
 	driver := DriverMath.ConvertFonts()

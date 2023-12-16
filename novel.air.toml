@@ -7,4 +7,4 @@ ignore_dir = [".git", "tmp", "build", "vendor"]
 ignored = ["*.test", "*.swp"]
 
 [build]
-  cmd = "go run server.go"
+  cmd = "go run main.go"

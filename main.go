@@ -9,8 +9,7 @@ import (
 )
 
 func main() {
-
-	if err := conf.NewConfig(); err != nil {
+	if err := conf.Initialize(); err != nil {
 		panic(err)
 	}
 	initDB(conf.GbGorm)
@@ -65,3 +64,7 @@ func initDB(db *gorm.DB) {
 		panic("failed to migrate table")
 	}
 }
+
+// TODO: 2021/7/21
+//  1. MIDDLEWARE调研,日志
+//  2. 实现login

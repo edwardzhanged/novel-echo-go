@@ -1,45 +1,52 @@
 package user_handler
 
 import (
+	"github.com/edwardzhanged/novel-go/app/handlers"
 	"github.com/edwardzhanged/novel-go/app/services"
+	"github.com/labstack/echo"
 )
 
-var userApi services.UserApi
+var userApi = &services.UserApi{}
 
-type User struct {
-	ID        uint   `json:"id"`
-	Nickname  string `json:"nickname" omitempty:"nickname" `
-	Password  string `json:"password" omitempty:"password"`
-	Phone     string `json:"phone" omitempty:"phone"`
-	UserSex   string `json:"user_sex" omitempty:"user_sex"`
-	UserPhoto string `json:"user_photo" omitempty:"user_photo"`
-}
-
-//func LoginHandler(c echo.Context) error {
-//	u := new(User)
-//	if err := c.Bind(u); err != nil {
-//		return err
-//	}
-//	user, err := userApi.Login(u.Phone, u.Password)
-//	if err != nil {
-//		resp := handlers.CustomResponse{Code: 201, Message: "用户名或密码错误"}
+//	func LoginHandler(c echo.Context) error {
+//		u := new(User)
+//		if err := c.Bind(u); err != nil {
+//			return err
+//		}
+//		user, err := userApi.Login(u.Phone, u.Password)
+//		if err != nil {
+//			resp := handlers.CustomResponse{Code: 201, Message: "用户名或密码错误"}
+//			return c.JSONPretty(200, &resp, "  ")
+//		}
+//		resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: &user}
 //		return c.JSONPretty(200, &resp, "  ")
 //	}
-//	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: &user}
-//	return c.JSONPretty(200, &resp, "  ")
-//}
-//
-//func RegisterHandler(c echo.Context) error {
-//	u := new(User)
-//	if err := c.Bind(u); err != nil {
-//		return err
-//	}
-//	newUser, _ := userApi.Register(u.Nickname, u.Password, u.Phone)
-//	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: &newUser}
-//
-//	return c.JSONPretty(200, &resp, "  ")
-//}
-//
+type RegisterReq struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	VerifyCode string `json:"verify_code"`
+	SessionId  string `json:"session_id"`
+}
+type RegisterResp struct {
+	Uid   uint   `json:"uid"`
+	Token string `json:"token"`
+}
+
+func RegisterHandler(c echo.Context) error {
+	u := new(RegisterReq)
+	if err := c.Bind(u); err != nil {
+		return err
+	}
+	userId, token, err := userApi.Register(u.Username, u.Password, u.VerifyCode, u.SessionId)
+	if err != nil {
+		resp := handlers.CustomResponse{Code: 201, Message: err.Error()}
+		return c.JSONPretty(201, &resp, "  ")
+	}
+	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: RegisterResp{Uid: userId, Token: token}}
+
+	return c.JSONPretty(200, &resp, "  ")
+}
+
 //func EditUserInfoHandler(c echo.Context) error {
 //	u := new(User)
 //	if err := c.Bind(u); err != nil {

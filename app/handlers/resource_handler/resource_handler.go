@@ -6,10 +6,10 @@ import (
 	"github.com/labstack/echo"
 )
 
-var resourceApi = &services.ResourceApi{}
+var ResourceApi = &services.ResourceApi{}
 
 func GetImgVerifyCodeHandler(c echo.Context) error {
-	id, b64s, err := resourceApi.GetImgVerifyCode()
+	id, b64s, err := ResourceApi.GetImgVerifyCode()
 	if err != nil {
 		resp := handlers.CustomResponse{Code: 201, Message: "用户名或密码错误"}
 		return c.JSONPretty(200, &resp, "  ")
@@ -21,7 +21,7 @@ func GetImgVerifyCodeHandler(c echo.Context) error {
 func VerifyImgAnswerHandler(c echo.Context) error {
 	id := c.FormValue("sessionId")
 	answer := c.FormValue("answer")
-	if resourceApi.VerifyImgAnswer(id, answer) {
+	if ResourceApi.VerifyImgAnswer(id, answer) {
 		resp := handlers.CustomResponse{Code: 200, Message: "OK"}
 		return c.JSONPretty(200, &resp, "  ")
 	}
