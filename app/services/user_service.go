@@ -7,6 +7,7 @@ import (
 	"github.com/edwardzhanged/novel-go/app/model"
 	"github.com/edwardzhanged/novel-go/app/utils"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type UserService interface {
@@ -23,20 +24,24 @@ type BookShelf struct {
 	BookName string `json:"book_name"`
 }
 
-// func (u *UserApi) Login(phone string, password string) (*UserInfo, error) {
-//
-//		var modelUser model.User
-//		conf.GbGorm.Where("phone = ?", phone).First(&modelUser)
-//		// 验证密码
-//		err := bcrypt.CompareHashAndPassword([]byte(modelUser.Password), []byte(password))
-//		if err != nil {
-//			return nil, err
-//		}
-//		token := generateToken(modelUser.Uuid)
-//		return &UserInfo{
-//			Token: token, Uid: int(modelUser.ID), Nickname: modelUser.Nickname,
-//		}, nil
-//	}
+func (u *UserApi) Login(username string, password string) (uid uint, nickname string, token string, err error) {
+	var user model.UserInfo
+	result := conf.GbGorm.Where("username = ?", username).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return 0, "", "", errors.New("用户不存在")
+	}
+	// 验证密码
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	if err != nil {
+		return 0, "", "", errors.New("密码错误")
+	}
+	token, err = utils.GenerateToken(user.ID)
+	if err != nil {
+		return 0, "", "", err
+	}
+	return user.ID, user.NickName, token, nil
+}
+
 func (u *UserApi) Register(username string, password string, verifyCode string, sessionId string) (uid uint, token string, err error) {
 	// 验证码校验
 	if !utils.Store.Verify(sessionId, verifyCode, true) {
@@ -59,6 +64,15 @@ func (u *UserApi) Register(username string, password string, verifyCode string, 
 	conf.GbGorm.Create(newUser)
 	token, _ = utils.GenerateToken(newUser.ID)
 	return newUser.ID, token, nil
+}
+
+func (u *UserApi) GetUserInfo(uid uint) (nickname string, userSex uint8, userPhoto string, err error) {
+	var user model.UserInfo
+	result := conf.GbGorm.Where("id = ?", uid).First(&user)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return "", 0, "", errors.New("用户不存在")
+	}
+	return user.NickName, user.UserSex, user.UserPhoto, nil
 }
 
 //func (u *UserApi) EditInfo(uid int, userSex string, userPhoto string, nickname string) error {
