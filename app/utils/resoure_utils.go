@@ -39,5 +39,6 @@ func (r *RedisVerifyStore) Verify(id string, answer string, clear bool) bool {
 	if err != nil {
 		return false
 	}
+	conf.GbRedis.Del(r.Context, r.PreKey+id)
 	return val != "" && val == answer
 }

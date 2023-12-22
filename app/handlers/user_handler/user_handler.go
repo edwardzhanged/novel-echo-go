@@ -36,8 +36,8 @@ func LoginHandler(c echo.Context) error {
 type RegisterReq struct {
 	Username   string `json:"username"`
 	Password   string `json:"password"`
-	VerifyCode string `json:"verify_code"`
-	SessionId  string `json:"session_id"`
+	VerifyCode string `json:"velCode"`
+	SessionId  string `json:"sessionId"`
 }
 type RegisterResp struct {
 	Uid   uint   `json:"uid"`
@@ -54,7 +54,7 @@ func RegisterHandler(c echo.Context) error {
 		resp := handlers.CustomResponse{Code: "201", Message: err.Error()}
 		return c.JSONPretty(201, &resp, "  ")
 	}
-	resp := handlers.CustomResponse{Code: "200", Message: "OK", Data: RegisterResp{Uid: userId, Token: token}}
+	resp := handlers.CustomResponse{Code: "00000", Message: "OK", Data: RegisterResp{Uid: userId, Token: token}}
 
 	return c.JSONPretty(200, &resp, "  ")
 }

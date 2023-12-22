@@ -14,7 +14,7 @@ func GetImgVerifyCodeHandler(c echo.Context) error {
 		resp := handlers.CustomResponse{Code: "A0001", Message: "用户名或密码错误"}
 		return c.JSONPretty(200, &resp, "  ")
 	}
-	resp := handlers.CustomResponse{Code: "00000", Message: "OK", Data: map[string]string{"sessionId": id, "b64s": b64s}}
+	resp := handlers.CustomResponse{Code: "00000", Message: "OK", Data: map[string]string{"sessionId": id, "img": b64s}}
 	return c.JSONPretty(200, &resp, "  ")
 }
 
