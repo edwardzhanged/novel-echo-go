@@ -3,8 +3,7 @@ package user_handler
 import (
 	"github.com/edwardzhanged/novel-go/app/handlers"
 	"github.com/edwardzhanged/novel-go/app/services"
-	"github.com/labstack/echo"
-	"strconv"
+	"github.com/labstack/echo/v4"
 )
 
 var userApi = &services.UserApi{}
@@ -16,7 +15,7 @@ type LoginReq struct {
 
 type LoginResp struct {
 	Uid      uint   `json:"uid"`
-	Nickname string `json:"nickname"`
+	Nickname string `json:"nickName"`
 	Token    string `json:"token"`
 }
 
@@ -27,10 +26,10 @@ func LoginHandler(c echo.Context) error {
 	}
 	uid, nickname, token, err := userApi.Login(request.Username, request.Password)
 	if err != nil {
-		resp := handlers.CustomResponse{Code: 201, Message: err.Error()}
+		resp := handlers.CustomResponse{Code: "201", Message: err.Error()}
 		return c.JSONPretty(200, &resp, "  ")
 	}
-	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: LoginResp{Uid: uid, Nickname: nickname, Token: token}}
+	resp := handlers.CustomResponse{Code: "00000", Message: "OK", Data: LoginResp{Uid: uid, Nickname: nickname, Token: token}}
 	return c.JSONPretty(200, &resp, "  ")
 }
 
@@ -52,10 +51,10 @@ func RegisterHandler(c echo.Context) error {
 	}
 	userId, token, err := userApi.Register(request.Username, request.Password, request.VerifyCode, request.SessionId)
 	if err != nil {
-		resp := handlers.CustomResponse{Code: 201, Message: err.Error()}
+		resp := handlers.CustomResponse{Code: "201", Message: err.Error()}
 		return c.JSONPretty(201, &resp, "  ")
 	}
-	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: RegisterResp{Uid: userId, Token: token}}
+	resp := handlers.CustomResponse{Code: "200", Message: "OK", Data: RegisterResp{Uid: userId, Token: token}}
 
 	return c.JSONPretty(200, &resp, "  ")
 }
@@ -67,14 +66,13 @@ type GetUserInfoResp struct {
 }
 
 func GetUserInfoHandler(c echo.Context) error {
-	userId := c.Param("id")
-	userIdInt, err := strconv.ParseUint(userId, 10, 64)
-	nickname, sex, photo, err := userApi.GetUserInfo(uint(userIdInt))
+	userId := c.Get("uid").(uint64)
+	nickname, sex, photo, err := userApi.GetUserInfo(userId)
 	if err != nil {
-		resp := handlers.CustomResponse{Code: 201, Message: err.Error()}
+		resp := handlers.CustomResponse{Code: "A0001", Message: err.Error()}
 		return c.JSONPretty(201, &resp, "  ")
 	}
-	resp := handlers.CustomResponse{Code: 200, Message: "OK", Data: GetUserInfoResp{
+	resp := handlers.CustomResponse{Code: "00000", Message: "OK", Data: GetUserInfoResp{
 		Nickname: nickname,
 		Photo:    photo,
 		Sex:      sex,

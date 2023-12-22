@@ -1,7 +1,7 @@
 package handlers
 
 type CustomResponse struct {
-	Code    int         `json:"code"`
+	Code    string      `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }

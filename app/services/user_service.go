@@ -66,7 +66,7 @@ func (u *UserApi) Register(username string, password string, verifyCode string, 
 	return newUser.ID, token, nil
 }
 
-func (u *UserApi) GetUserInfo(uid uint) (nickname string, userSex uint8, userPhoto string, err error) {
+func (u *UserApi) GetUserInfo(uid uint64) (nickname string, userSex uint8, userPhoto string, err error) {
 	var user model.UserInfo
 	result := conf.GbGorm.Where("id = ?", uid).First(&user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
