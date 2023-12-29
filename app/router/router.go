@@ -44,6 +44,7 @@ func InitRouter() {
 
 	authorRouter := e.Group("/api/author")
 	authorRouter.GET("/status", author_handler.GetAuthorStatusHandler)
+	authorRouter.POST("/register", author_handler.RegisterAuthorHandler)
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
@@ -69,11 +70,7 @@ func skipper(c echo.Context) bool {
 
 func verifyToken(t *jwt.Token) (interface{}, error) {
 	var token string
-	if !strings.HasPrefix(t.Raw, "Bearer ") {
-		token = "Bearer " + t.Raw
-	} else {
-		token = t.Raw
-	}
+	token = t.Raw
 	secret := []byte(conf.GbViper.GetString("jwt.secret"))
 	_, err := jwt.Parse(strings.TrimPrefix(token, "Bearer "), func(token *jwt.Token) (interface{}, error) {
 		return secret, nil

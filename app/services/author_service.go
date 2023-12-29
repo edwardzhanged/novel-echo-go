@@ -5,10 +5,12 @@ import (
 	"github.com/edwardzhanged/novel-go/app/conf"
 	"github.com/edwardzhanged/novel-go/app/model"
 	"gorm.io/gorm"
+	"strconv"
 )
 
 type AuthorService interface {
 	GetAuthorStatus()
+	RegisterAuthor()
 }
 type AuthorApi struct{}
 
@@ -22,5 +24,17 @@ func (author *AuthorApi) GetAuthorStatus(uid uint64) (status uint8, err error) {
 		return 0, nil
 	} else {
 		return 1, nil
+	}
+}
+
+func (author *AuthorApi) RegisterAuthor(uid uint64, penName string, telephone string, chatAccount string, email string,
+	workDirection string) (err error) {
+	parsedUint64, _ := strconv.ParseUint(workDirection, 10, 8)
+	result := conf.GbGorm.Create(&model.AuthorInfo{UserID: uid, PenName: penName, TelPhone: telephone,
+		ChatAccount: chatAccount, WorkDirection: uint8(parsedUint64), Email: email, InviteCodeID: "1"})
+	if result.Error == nil {
+		return nil
+	} else {
+		return result.Error
 	}
 }
