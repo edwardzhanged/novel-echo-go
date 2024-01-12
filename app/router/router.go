@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/edwardzhanged/novel-go/app/conf"
 	"github.com/edwardzhanged/novel-go/app/handlers/author_handler"
+	"github.com/edwardzhanged/novel-go/app/handlers/book_handler"
 	"github.com/edwardzhanged/novel-go/app/handlers/resource_handler"
 	"github.com/edwardzhanged/novel-go/app/handlers/user_handler"
 	"github.com/golang-jwt/jwt/v5"
@@ -45,6 +46,7 @@ func InitRouter() {
 	authorRouter := e.Group("/api/author")
 	authorRouter.GET("/status", author_handler.GetAuthorStatusHandler)
 	authorRouter.POST("/register", author_handler.RegisterAuthorHandler)
+	authorRouter.POST("/book", book_handler.CreateBookHandler)
 	e.Logger.Fatal(e.Start(":1323"))
 
 }
