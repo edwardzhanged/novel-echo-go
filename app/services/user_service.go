@@ -6,6 +6,7 @@ import (
 	"github.com/edwardzhanged/novel-go/app/conf"
 	"github.com/edwardzhanged/novel-go/app/model"
 	"github.com/edwardzhanged/novel-go/app/utils"
+	n "github.com/edwardzhanged/novel-go/app/utils/notify"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,7 @@ type UserService interface {
 	EditInfo()
 	AddBookToShelf()
 	GetUserBookShelf()
+	NotifyUser()
 }
 
 type UserApi struct{}
@@ -73,6 +75,14 @@ func (u *UserApi) GetUserInfo(uid uint64) (nickname string, userSex uint8, userP
 		return "", 0, "", errors.New("用户不存在")
 	}
 	return user.NickName, user.UserSex, user.UserPhoto, nil
+}
+
+func (u *UserApi) NotifyUser(uid uint64, receiver string, msg string) error {
+	notify := func(notifier []*n.Notifier) {
+		notifier.Notify()
+	}
+	notify(&n.Email{To: "@gmail.com", Subject: "Hello"})
+	return nil
 }
 
 //func (u *UserApi) EditInfo(uid int, userSex string, userPhoto string, nickname string) error {
