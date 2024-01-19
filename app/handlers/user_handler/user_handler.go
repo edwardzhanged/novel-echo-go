@@ -79,6 +79,11 @@ func GetUserInfoHandler(c echo.Context) error {
 	}}
 	return c.JSONPretty(200, &resp, "  ")
 }
+func NotifyUserHandler(c echo.Context) error {
+	userApi.NotifyUser("userId", "test")
+	resp := handlers.CustomResponse{Code: "00000", Message: "OK"}
+	return c.JSONPretty(200, &resp, "  ")
+}
 
 //func EditUserInfoHandler(c echo.Context) error {
 //	u := new(User)

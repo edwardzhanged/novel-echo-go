@@ -33,6 +33,7 @@ func InitRouter() {
 	userRouter.POST("/login", user_handler.LoginHandler)
 	userRouter.POST("/register", user_handler.RegisterHandler)
 	userRouter.GET("", user_handler.GetUserInfoHandler)
+	userRouter.POST("/notify", user_handler.NotifyUserHandler)
 
 	//userRouter.POST("/info", user_handler.EditUserInfoHandler)
 	//userRouter.POST("/addBookToShelf", user_handler.AddBookToShelfHandler)

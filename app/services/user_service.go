@@ -3,10 +3,13 @@ package services
 import (
 	"errors"
 	"fmt"
+	"log"
+	"sync"
+
 	"github.com/edwardzhanged/novel-go/app/conf"
 	"github.com/edwardzhanged/novel-go/app/model"
 	"github.com/edwardzhanged/novel-go/app/utils"
-	n "github.com/edwardzhanged/novel-go/app/utils/notify"
+	"github.com/edwardzhanged/novel-go/app/utils/notify"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
@@ -77,11 +80,40 @@ func (u *UserApi) GetUserInfo(uid uint64) (nickname string, userSex uint8, userP
 	return user.NickName, user.UserSex, user.UserPhoto, nil
 }
 
-func (u *UserApi) NotifyUser(uid uint64, receiver string, msg string) error {
-	notify := func(notifier []*n.Notifier) {
-		notifier.Notify()
+func (u *UserApi) NotifyUser(msg string, sender string) error {
+	email := notify.Email{To: msg, Subject: sender}
+	var users []*model.UserInfo
+	conf.GbGorm.Find(&users)
+
+	var wg sync.WaitGroup
+	sem := make(chan struct{}, 100) // 创建一个带缓冲的channel，用于限制并发数
+
+	var failedUsers []*model.UserInfo // 创建一个切片来保存发送失败的用户
+	var mu sync.Mutex                 // 创建一个互斥锁
+
+	for _, user := range users {
+		wg.Add(1)
+		sem <- struct{}{} // 向channel发送一个空结构体，如果channel已满，这个操作会阻塞
+		go func(user *model.UserInfo) {
+			defer wg.Done()          // 在goroutine结束时调用Done
+			defer func() { <-sem }() // 在goroutine结束时从channel接收一个空结构体，释放一个并发位置
+
+			err := notify.SendNotification(&email, user)
+			if err != nil {
+				mu.Lock()                               // 在修改失败列表前获取锁
+				failedUsers = append(failedUsers, user) // 将失败的用户添加到失败列表中
+				mu.Unlock()                             // 修改完成后释放锁
+			}
+		}(user)
 	}
-	notify(&n.Email{To: "@gmail.com", Subject: "Hello"})
+
+	wg.Wait()
+
+	// 打印所有发送失败的用户
+	for _, user := range failedUsers {
+		log.Printf("Failed to send notification to user: %v", user.Username)
+	}
+
 	return nil
 }
 
